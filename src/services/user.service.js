@@ -1,5 +1,6 @@
 
 import { authHeader } from '../helpers';
+// import { resolve } from 'core-js/fn/promise';
 const apiUrl = 'http://localhost:8000';
 
 export const userService = {
@@ -13,23 +14,32 @@ export const userService = {
 };
 
 function login(username, password) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    };
+    // const requestOptions = {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ username, password })
+    // };
 
-    return fetch(apiUrl+'/users/authenticate', requestOptions)
-        .then(handleResponse)
-        .then(user => {
-            // login thành công nếu có một token jwt trong response
-            if (user.token) {
-                // lưu dữ liệu user và token jwt vào local storage để giữ user được log in trong page
-                localStorage.setItem('user', JSON.stringify(user));
-            }
+    // return fetch(apiUrl+'/users/authenticate', requestOptions)
+    //     .then(handleResponse)
+    //     .then(user => {
+    //         // login thành công nếu có một token jwt trong response
+    //         if (user.token) {
+    //             // lưu dữ liệu user và token jwt vào local storage để giữ user được log in trong page
+    //             localStorage.setItem('user', JSON.stringify(user));
+    //         }
 
-            return user;
-        });
+    //         return user;
+    //     });
+    
+    var user = new Promise(
+        function (resolve) {
+            resolve(
+                localStorage.setItem('user', JSON.stringify({"token":username+password}))
+            );
+        }
+    )
+    return user;
 }
 
 function logout() {

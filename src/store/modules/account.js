@@ -8,7 +8,7 @@ const state = user ? { status: { loggedIn: true }, user } : { status: {}, user: 
 const actions = {
     login({ dispatch, commit }, { username, password }) {
         commit('loginRequest', { username });
-    
+        //console.log('action login');
         userService.login(username, password)
             .then(
                 user => {

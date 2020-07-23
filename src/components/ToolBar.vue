@@ -65,7 +65,7 @@
             v-for="item in items"
             :key="item.title"
             link
-            
+            :to="item.link"
             >
             <v-list-item-content>
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -84,9 +84,9 @@ export default {
     return {
       drawer: false,
       items: [
-        { title: 'Home', icon: 'dashboard', route: '/' },
-        { title: 'Employee', icon: 'question_answer', route: '/employee'},
-        { title: 'Department', icon: 'question_answer', route: '/department'},
+        { title: 'Home', icon: 'dashboard', link: '/' },
+        { title: 'Employee', icon: 'question_answer', link: '/employee'},
+        { title: 'Department', icon: 'question_answer', link: '/department'},
       ],
       itemMenus:[
         { title: 'Logout' },

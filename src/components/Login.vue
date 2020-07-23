@@ -44,6 +44,7 @@
                     name="login"
                     prepend-icon="mdi-account"
                     type="text"
+                    v-model="username"
                   ></v-text-field>
 
                   <v-text-field
@@ -52,12 +53,13 @@
                     name="password"
                     prepend-icon="mdi-lock"
                     type="password"
+                    v-model="password"
                   ></v-text-field>
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary">Login</v-btn>
+                <v-btn color="primary" @click="handleSubmit">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
