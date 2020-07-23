@@ -45,7 +45,7 @@ function login(username, password) {
 function logout() {
     // xoá user từ local storage để log out
     localStorage.removeItem('user');
-    this.$route.push('/');
+    this.$router.push('/');
 }
 
 function register(user) {
