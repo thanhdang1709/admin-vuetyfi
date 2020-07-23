@@ -1,6 +1,7 @@
 
 import { authHeader } from '../helpers';
 // import { resolve } from 'core-js/fn/promise';
+import router from '../router';
 const apiUrl = 'http://localhost:8000';
 
 export const userService = {
@@ -45,7 +46,9 @@ function login(username, password) {
 function logout() {
     // xoá user từ local storage để log out
     localStorage.removeItem('user');
-    this.$router.push('/');
+    router.push('/').catch(error => {
+        console.info(error.message)
+     });
 }
 
 function register(user) {
