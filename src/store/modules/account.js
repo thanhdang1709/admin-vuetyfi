@@ -8,14 +8,16 @@ const state = user ? { status: { loggedIn: true }, user } : { status: {}, user: 
 const actions = {
     login({ dispatch, commit }, { username, password }) {
         commit('loginRequest', { username });
-        //console.log('action login');
+        console.log('action login');
         userService.login(username, password)
             .then(
+                
                 user => {
                     commit('loginSuccess', user);
                     router.push('/');
                 },
                 error => {
+                    console.log(error);
                     commit('loginFailure', error);
                     dispatch('alert/error', error, { root: true });
                 }

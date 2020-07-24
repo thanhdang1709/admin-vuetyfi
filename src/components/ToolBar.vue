@@ -6,7 +6,7 @@
         height="auto"
         tile
         >
-        <v-toolbar dense dark class="primary" >
+        <v-app-bar dense dark class="primary" app>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-spacer></v-spacer>
             <v-toolbar-title text-aglign="center">Employee Management</v-toolbar-title>
@@ -34,13 +34,13 @@
                 </v-list-item>
             </v-list>
             </v-menu>
-        </v-toolbar>
+        </v-app-bar>
         </v-card>
 
         <v-navigation-drawer
         v-model="drawer"
-        absolute
-        temporary
+        app
+        
         
         >
         <v-list
