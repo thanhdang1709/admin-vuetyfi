@@ -1,6 +1,11 @@
 <template>
   <v-sheet justify-center>
-    <v-skeleton-loader :loading="loading" :transition="transition" height="94" type="table">
+    <v-skeleton-loader
+      :loading="loading"
+      :transition="transition"
+      height="94"
+      type="table"
+    >
       <v-data-table
         :headers="headers"
         :items="desserts"
@@ -16,7 +21,9 @@
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
 
-            <v-btn color="primary" dark class="mb-2" to="department/add">New Department</v-btn>
+            <v-btn color="primary" dark class="mb-2" to="department/add"
+              >New Department</v-btn
+            >
 
             <!-- <v-dialog v-model="dialog" max-width="500px">
             
@@ -113,6 +120,7 @@ export default {
       handler() {
         // console.log(this.options);
         this.getDataFromApi().then((data) => {
+          console.log(data);
           this.desserts = data.items.data;
           this.totalItems = this.total_page;
         });
@@ -122,39 +130,40 @@ export default {
   },
 
   created() {
-    if (!this.departments) {
-      this.getAllDepartment();
-      setTimeout(() => {
-        this.desserts = this.departments;
-        this.loading = false;
-      }, 200);
-    } else {
-      console.log("computed o day");
-      this.desserts = this.departments;
-      this.loading = false;
-    }
+    // if (!this.departments) {
+    //   this.getDataFromApi().then((data) => {
+    //     console.log(data);
+    //   });
+    //   setTimeout(() => {
+    //     this.desserts = this.departments;
+    //     this.loading = false;
+    //   }, 500);
+    // } else {
+    //   console.log("computed o day");
+    //   this.desserts = this.departments;
+    //   this.loading = false;
+    // }
     // goi API o day
-  },
-  mounted() {
     if (!this.departments) {
-      this.getDataFromApi();
-      setTimeout(() => {
+      this.getDataFromApi().then((data) => {
+        console.log(data);
         this.loading = false;
         this.desserts = this.departments;
         this.totalItems = this.total_page;
-      }, 200);
+      });
     } else {
       this.loading = false;
       this.desserts = this.departments;
     }
   },
+  mounted() {},
 
   methods: {
     ...mapActions("department", ["getAllDepartment", "deleteDepartment"]),
     ...mapActions("alert", ["clear"]),
     getDataFromApi() {
       return new Promise((resolve) => {
-        //const { page, itemsPerPage } = this.options;
+        const { page, itemsPerPage } = this.options;
         //let items = this.employees;
         //const total = items.length;
 
@@ -163,8 +172,8 @@ export default {
         //
         this.desserts = this.departments;
         this.getAllDepartment({
-          limit: this.options.itemsPerPage,
-          page: this.options.page,
+          limit: itemsPerPage,
+          page: page,
         }).then((responseData) => {
           console.log(responseData);
           resolve({
@@ -172,7 +181,7 @@ export default {
             total: this.total_page,
           });
         });
-        this.$forceUpdate();
+        // this.$forceUpdate();
       });
     },
 
