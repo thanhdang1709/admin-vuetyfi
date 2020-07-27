@@ -2,7 +2,7 @@ import { authHeader } from "../helpers";
 // import { resolve } from 'core-js/fn/promise';
 // import axios from 'axios';
 import router from "../router";
-const apiUrl = "http://localhost/employee-management/api";
+const apiUrl = "https://api.xemhd.xyz/api";
 
 export const userService = {
 	login,

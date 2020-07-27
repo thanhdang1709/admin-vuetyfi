@@ -6,26 +6,32 @@ import { departmentService } from "../../services";
 const state = {
 	departments: null,
 	error: null,
+	total_page: 0,
 };
 
 const actions = {
-	getAllDepartment({ commit }) {
+	getAllDepartment({ commit }, data) {
 		// commit('allEmployee');
-		departmentService.getAllDepartment().then(
-			(data) => {
-				//console.log(typeof(data))
-				let responseData = JSON.parse(data);
-				commit("allDepartment", responseData.data);
-				//router.push('/');
-				//console.log(responseData);
-				//return Promise.resolve(true);
-			},
-			(error) => {
-				//console.log(error);
-				commit("requestFailure", error);
-				//dispatch('alert/error', error, { root: true });
-			}
-		);
+		return new Promise((resolve, reject) => {
+			departmentService.getAllDepartment(data).then(
+				(data) => {
+					//console.log(typeof(data))
+					let responseData = JSON.parse(data);
+					commit("allDepartment", responseData.data);
+					commit("totalPage", responseData.total);
+					//router.push('/');
+					//console.log(responseData);
+					//return Promise.resolve(true);
+					resolve(responseData);
+				},
+				(error) => {
+					//console.log(error);
+					commit("requestFailure", error);
+					//dispatch('alert/error', error, { root: true });
+					reject(error);
+				}
+			);
+		});
 	},
 	editDepartment({ dispatch, commit }, data) {
 		departmentService.editDepartment(data).then(
@@ -75,6 +81,10 @@ const mutations = {
 	allDepartment(state, data) {
 		//state.status = { loggingIn: true };
 		state.departments = data;
+	},
+	totalPage(state, data) {
+		//state.status = { loggingIn: true };
+		state.total_page = data;
 	},
 	requestFailure(state, data) {
 		state.error = data;

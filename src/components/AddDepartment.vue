@@ -11,7 +11,7 @@
         <v-row>
           <v-col cols="12" sm="12">
             <v-text-field
-              v-model="name"
+              v-model.trim="name"
               :error-messages="nameErrors"
               :counter="10"
               label="Name"
@@ -22,7 +22,7 @@
           </v-col>
         </v-row>
         <v-textarea
-          v-model="note"
+          v-model.trim="note"
           :error-messages="noteErrors"
           :counter="10"
           label="Description"

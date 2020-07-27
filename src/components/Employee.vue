@@ -1,12 +1,19 @@
 <template>
   <v-sheet justify-center>
     <v-skeleton-loader :loading="loading" :transition="transition" height="94" type="table">
-      <v-data-table :headers="headers" :items="desserts" sort-by="calories" class="elevation-1">
+      <v-data-table
+        :headers="headers"
+        :items="desserts"
+        sort-by="id"
+        class="elevation-1"
+        :loading="loading"
+        :server-items-length="totalItems"
+        :options.sync="options"
+      >
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title>Employee List</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
-            <v-btn @click="testSubmit">Reload Data</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" dark class="mb-2" to="employee/add">New Employee</v-btn>
 
@@ -70,9 +77,11 @@
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
-
+//import { axios } from "axios";
 export default {
   data: () => ({
+    options: {},
+    totalItems: 0,
     loading: true,
     transition: "fade-transition",
     dialog: false,
@@ -113,7 +122,7 @@ export default {
   }),
 
   computed: {
-    ...mapState("employee", ["employees"]),
+    ...mapState("employee", ["employees", "total_page"]),
     formTitle() {
       return this.editedIndex === -1 ? "New Employee" : "Edit Employee";
     },
@@ -122,33 +131,62 @@ export default {
     dialog(val) {
       val || this.close();
     },
+    options: {
+      handler() {
+        // console.log(this.options);
+        this.getDataFromApi().then((data) => {
+          console.log(data);
+          this.desserts = this.employees;
+          this.totalItems = this.total_page;
+        });
+      },
+      deep: true,
+    },
   },
-
   created() {
+    console.log("created !");
+
+    // goi API o day
+  },
+  mounted() {
     if (!this.employees) {
-      this.getAllEmployee();
+      this.getDataFromApi();
       setTimeout(() => {
         this.loading = false;
         this.desserts = this.employees;
+        this.totalItems = this.total_page;
       }, 1000);
     } else {
       this.loading = false;
       this.desserts = this.employees;
     }
-    // goi API o day
   },
-  mounted() {},
   methods: {
     ...mapActions("employee", ["getAllEmployee", "deleteEmployee"]),
     ...mapActions("alert", ["clear"]),
-    testSubmit() {
-      this.getAllEmployee();
-      //console.log(this.employee)
-      this.desserts = this.employees;
-    },
-    // filterEmployeeToDesserts (employee) {
+    getDataFromApi() {
+      return new Promise((resolve) => {
+        //const { page, itemsPerPage } = this.options;
+        //let items = this.employees;
+        //const total = items.length;
 
-    // },
+        // if (itemsPerPage > 0) {
+        //   items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+        //
+        this.desserts = this.employees;
+        this.getAllEmployee({
+          limit: this.options.itemsPerPage,
+          page: this.options.page,
+        }).then((responseData) => {
+          console.log(responseData);
+          resolve({
+            items: responseData,
+            total: this.total_page,
+          });
+        });
+        this.$forceUpdate();
+      });
+    },
     initialize() {
       this.desserts = [
         {

@@ -151,7 +151,7 @@ export default {
     // async function callDepartment() {
     //   await this.getAllDepartment();
     // }
-    this.getAllDepartment();
+    this.getAllDepartment({ limit: 10, page: 1 });
     // callDepartment().then(() => {
     //   this.departments = this.departmentState;
     // });

@@ -1,28 +1,24 @@
 <template>
-	<v-sheet justify-center>
-		<v-skeleton-loader
-			:loading="loading"
-			:transition="transition"
-			height="94"
-			type="table"
-		>
-			<v-data-table
-				:headers="headers"
-				:items="desserts"
-				sort-by="calories"
-				class="elevation-1"
-			>
-				<template v-slot:top>
-					<v-toolbar flat color="white">
-						<v-toolbar-title>Department List</v-toolbar-title>
-						<v-divider class="mx-4" inset vertical></v-divider>
-						<v-spacer></v-spacer>
+  <v-sheet justify-center>
+    <v-skeleton-loader :loading="loading" :transition="transition" height="94" type="table">
+      <v-data-table
+        :headers="headers"
+        :items="desserts"
+        sort-by="id"
+        class="elevation-1"
+        :loading="loading"
+        :server-items-length="totalItems"
+        :options.sync="options"
+      >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Department List</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
 
-						<v-btn color="primary" dark class="mb-2" to="department/add"
-							>New Department</v-btn
-						>
+            <v-btn color="primary" dark class="mb-2" to="department/add">New Department</v-btn>
 
-						<!-- <v-dialog v-model="dialog" max-width="500px">
+            <!-- <v-dialog v-model="dialog" max-width="500px">
             
             <v-card>
                 <v-card-title>
@@ -58,126 +54,164 @@
                 </v-card-actions>
             </v-card>
             </v-dialog>-->
-					</v-toolbar>
-				</template>
-				<template v-slot:item.actions="{ item }">
-					<v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-					<v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-				</template>
-				<template v-slot:no-data>
-					<v-btn color="primary" @click="initialize">Reset</v-btn>
-				</template>
-			</v-data-table>
-		</v-skeleton-loader>
-	</v-sheet>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+          <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+        </template>
+        <template v-slot:no-data>
+          <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
+        </template>
+      </v-data-table>
+    </v-skeleton-loader>
+  </v-sheet>
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
 
 export default {
-	data: () => ({
-		loading: true,
-		transition: "fade-transition",
-		dialog: false,
-		headers: [
-			{
-				text: "ID",
-				align: "start",
-				value: "id",
-			},
-			{ text: "NAME", value: "name" },
-			{ text: "DESCRIPTION", value: "note" },
-			{ text: "ACTIVE", value: "actions", sortable: false },
-		],
-		desserts: [],
-		editedIndex: -1,
-		editedItem: {
-			name: "",
-			emanote: "",
-		},
-		defaultItem: {
-			name: "",
-			note: "",
-		},
-	}),
-	computed: {
-		...mapState("department", ["departments"]),
-		formTitle() {
-			return this.editedIndex === -1 ? "New Department" : "Edit Department";
-		},
-	},
+  data: () => ({
+    options: {},
+    totalItems: 0,
+    loading: true,
+    transition: "fade-transition",
+    dialog: false,
+    headers: [
+      {
+        text: "ID",
+        align: "start",
+        value: "id",
+      },
+      { text: "NAME", value: "name" },
+      { text: "DESCRIPTION", value: "note" },
+      { text: "ACTIVE", value: "actions", sortable: false },
+    ],
+    desserts: [],
+    editedIndex: -1,
+    editedItem: {
+      name: "",
+      emanote: "",
+    },
+    defaultItem: {
+      name: "",
+      note: "",
+    },
+  }),
+  computed: {
+    ...mapState("department", ["departments", "total_page"]),
+    formTitle() {
+      return this.editedIndex === -1 ? "New Department" : "Edit Department";
+    },
+  },
 
-	watch: {
-		dialog(val) {
-			val || this.close();
-		},
-	},
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+    options: {
+      handler() {
+        // console.log(this.options);
+        this.getDataFromApi().then((data) => {
+          this.desserts = data.items.data;
+          this.totalItems = this.total_page;
+        });
+      },
+      deep: true,
+    },
+  },
 
-	created() {
-		if (!this.departments) {
-			this.getAllDepartment();
-			setTimeout(() => {
-				this.desserts = this.departments;
-				this.loading = false;
-			}, 1000);
-		} else {
-			console.log("computed o day");
-			this.desserts = this.departments;
-			this.loading = false;
-		}
-		// goi API o day
-	},
-	mounted() {},
+  created() {
+    if (!this.departments) {
+      this.getAllDepartment();
+      setTimeout(() => {
+        this.desserts = this.departments;
+        this.loading = false;
+      }, 200);
+    } else {
+      console.log("computed o day");
+      this.desserts = this.departments;
+      this.loading = false;
+    }
+    // goi API o day
+  },
+  mounted() {
+    if (!this.departments) {
+      this.getDataFromApi();
+      setTimeout(() => {
+        this.loading = false;
+        this.desserts = this.departments;
+        this.totalItems = this.total_page;
+      }, 200);
+    } else {
+      this.loading = false;
+      this.desserts = this.departments;
+    }
+  },
 
-	methods: {
-		...mapActions("department", ["getAllDepartment", "deleteDepartment"]),
-		...mapActions("alert", ["clear"]),
-		initialize() {
-			this.desserts = [
-				{
-					id: 0,
-					name: "",
-					note: "",
-				},
-			];
-		},
+  methods: {
+    ...mapActions("department", ["getAllDepartment", "deleteDepartment"]),
+    ...mapActions("alert", ["clear"]),
+    getDataFromApi() {
+      return new Promise((resolve) => {
+        //const { page, itemsPerPage } = this.options;
+        //let items = this.employees;
+        //const total = items.length;
 
-		editItem(item) {
-			// this.editedIndex = this.desserts.indexOf(item)
-			// this.editedItem = Object.assign({}, item)
-			// this.dialog = true
-			this.$router.push({
-				name: "EditDepartment",
-				params: { department: item },
-			});
-			console.log(item);
-		},
+        // if (itemsPerPage > 0) {
+        //   items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+        //
+        this.desserts = this.departments;
+        this.getAllDepartment({
+          limit: this.options.itemsPerPage,
+          page: this.options.page,
+        }).then((responseData) => {
+          console.log(responseData);
+          resolve({
+            items: responseData,
+            total: this.total_page,
+          });
+        });
+        this.$forceUpdate();
+      });
+    },
 
-		deleteItem(item) {
-			const index = this.desserts.indexOf(item);
-			if (confirm("Are you sure you want to delete this department?")) {
-				setTimeout(() => this.clear(), 3000);
-				this.desserts.splice(index, 1);
-				this.deleteDepartment({ id: item.id });
-			}
-		},
+    editItem(item) {
+      // this.editedIndex = this.desserts.indexOf(item)
+      // this.editedItem = Object.assign({}, item)
+      // this.dialog = true
+      this.$router.push({
+        name: "EditDepartment",
+        params: { department: item },
+      });
+      console.log(item);
+    },
 
-		//   close () {
-		//     this.dialog = false
-		//     this.$nextTick(() => {
-		//       this.editedItem = Object.assign({}, this.defaultItem)
-		//       this.editedIndex = -1
-		//     })
-		//   },
+    deleteItem(item) {
+      const index = this.desserts.indexOf(item);
+      if (confirm("Are you sure you want to delete this department?")) {
+        setTimeout(() => this.clear(), 3000);
+        this.desserts.splice(index, 1);
+        this.deleteDepartment({ id: item.id });
+      }
+    },
 
-		//   save () {
-		//     if (this.editedIndex > -1) {
-		//       Object.assign(this.desserts[this.editedIndex], this.editedItem)
-		//     } else {
-		//       this.desserts.push(this.editedItem)
-		//     }
-		//     this.close()
-		//   },
-	},
+    //   close () {
+    //     this.dialog = false
+    //     this.$nextTick(() => {
+    //       this.editedItem = Object.assign({}, this.defaultItem)
+    //       this.editedIndex = -1
+    //     })
+    //   },
+
+    //   save () {
+    //     if (this.editedIndex > -1) {
+    //       Object.assign(this.desserts[this.editedIndex], this.editedItem)
+    //     } else {
+    //       this.desserts.push(this.editedItem)
+    //     }
+    //     this.close()
+    //   },
+  },
 };
 </script>

@@ -5,7 +5,7 @@ import axios from "axios";
 import { store } from "../store";
 
 import { userService } from "./user.service";
-const apiUrl = "http://localhost/employee-management/api";
+const apiUrl = "https://api.xemhd.xyz/api";
 
 export const employeeService = {
 	getAllEmployee,
@@ -16,11 +16,16 @@ export const employeeService = {
 	editEmployee,
 };
 
-function getAllEmployee() {
+function getAllEmployee(data) {
+	console.log(data);
 	const requestOptions = {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ token: store.state.account.user.token }),
+		body: JSON.stringify({
+			token: store.state.account.user.token,
+			limit: data.limit,
+			page: data.page,
+		}),
 	};
 	return fetch(apiUrl + "/getAllEmployee", requestOptions).then(handleResponse);
 }

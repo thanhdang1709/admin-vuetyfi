@@ -6,26 +6,52 @@ import router from "../../router";
 const state = {
 	employees: null,
 	error: null,
+	total_page: 0,
 };
 
 const actions = {
-	getAllEmployee({ commit }) {
+	getAllEmployee({ commit }, data) {
 		// commit('allEmployee');
-		employeeService.getAllEmployee().then(
-			(data) => {
-				//console.log(typeof(data))
-				let responseData = JSON.parse(data);
-				commit("allEmployee", responseData.data);
-				//router.push('/');
-				//console.log(responseData);
-				//return Promise.resolve(true);
-			},
-			(error) => {
-				//console.log(error);
-				commit("requestFailure", error);
-				//dispatch('alert/error', error, { root: true });
-			}
-		);
+		return new Promise((resolve, reject) => {
+			// Do something here... lets say, a http call using vue-resource
+			employeeService.getAllEmployee(data).then(
+				(data) => {
+					//console.log(data);
+					let responseData = JSON.parse(data);
+					commit("allEmployee", responseData.data);
+					commit("totalPage", responseData.total);
+					//router.push('/');
+					console.log(responseData.data);
+					//return Promise.resolve(true);
+					//console.log(state.employees);
+					resolve(responseData);
+				},
+				(error) => {
+					//console.log(error);
+					commit("requestFailure", error);
+					//dispatch('alert/error', error, { root: true });
+					reject(error);
+				}
+			);
+		});
+		// employeeService.getAllEmployee(data).then(
+		// 	(data) => {
+		// 		//console.log(data);
+		// 		let responseData = JSON.parse(data);
+		// 		commit("allEmployee", responseData.data);
+		// 		commit("totalPage", responseData.total);
+		// 		//router.push('/');
+		// 		console.log(responseData.data);
+		// 		//return Promise.resolve(true);
+		// 		//console.log(state.employees);
+		// 		return responseData;
+		// 	},
+		// 	(error) => {
+		// 		//console.log(error);
+		// 		commit("requestFailure", error);
+		// 		//dispatch('alert/error', error, { root: true });
+		// 	}
+		// );
 	},
 	deleteEmployee({ dispatch, commit }, data) {
 		employeeService.deleteEmployee(data).then(
@@ -139,6 +165,10 @@ const mutations = {
 	allEmployee(state, data) {
 		//state.status = { loggingIn: true };
 		state.employees = data;
+	},
+	totalPage(state, data) {
+		//state.status = { loggingIn: true };
+		state.total_page = data;
 	},
 	requestFailure(state, data) {
 		state.error = data;
