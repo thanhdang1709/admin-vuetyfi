@@ -74,6 +74,10 @@ function handleResponse(response) {
 		const error = "Bad Request";
 		return Promise.reject(error);
 	}
+	if (response.status == 302) {
+		const error = "HTTP FOUND";
+		return Promise.reject(error);
+	}
 	//(Promise.resolve('hello'));
 	return response.text().then((text) => {
 		const data = text; //&& JSON.parse(text);

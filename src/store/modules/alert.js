@@ -21,7 +21,7 @@ const mutations = {
 		state.message = message;
 	},
 	error(state, message) {
-		state.type = "danger";
+		state.type = "warning";
 		state.message = message;
 	},
 	clear(state) {
