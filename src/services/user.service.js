@@ -2,7 +2,7 @@ import { authHeader } from "../helpers";
 // import { resolve } from 'core-js/fn/promise';
 // import axios from 'axios';
 import router from "../router";
-const apiUrl = "https://api.xemhd.xyz/api";
+const apiUrl = process.env.VUE_APP_BASE_API;
 
 export const userService = {
 	login,

@@ -1,11 +1,6 @@
 <template>
   <v-sheet justify-center>
-    <v-skeleton-loader
-      :loading="loading"
-      :transition="transition"
-      height="94"
-      type="table"
-    >
+    <v-skeleton-loader :loading="loading" :transition="transition" height="94" type="table">
       <v-data-table
         :headers="headers"
         :items="desserts"
@@ -20,9 +15,7 @@
             <v-toolbar-title>Employee List</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" to="employee/add"
-              >New Employee</v-btn
-            >
+            <v-btn color="primary" dark class="mb-2" to="employee/add">New Employee</v-btn>
 
             <!-- <v-dialog v-model="dialog" max-width="500px">
                 
@@ -151,11 +144,12 @@ export default {
     },
   },
   created() {
-    console.log("created !");
+    console.log("created emplooyee!");
 
     // goi API o day
   },
   mounted() {
+    this.$Progress.start();
     if (!this.employees) {
       this.getDataFromApi();
       setTimeout(() => {
@@ -186,6 +180,7 @@ export default {
           page: this.options.page,
         }).then((responseData) => {
           console.log(responseData);
+          this.$Progress.finish();
           resolve({
             items: responseData,
             total: this.total_page,

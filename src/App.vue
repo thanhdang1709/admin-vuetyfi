@@ -10,6 +10,8 @@
           dismissible
         >{{ alert.message }}</v-alert>
         <router-view />
+        <!-- set progressbar -->
+        <vue-progress-bar></vue-progress-bar>
       </v-container>
     </v-main>
   </v-app>
@@ -31,6 +33,7 @@ export default {
   },
   mounted() {
     setTimeout(() => this.clear(), 3000);
+    this.$Progress.finish();
   },
   methods: {
     ...mapActions("alert", ["clear"]),
@@ -39,6 +42,20 @@ export default {
     $route(to, from) {
       console.log(to, from);
       this.clear();
+    },
+    created() {
+      this.$Progress.start();
+      this.$router.beforeEach((to, from, next) => {
+        if (to.meta.progress !== undefined) {
+          let meta = to.meta.progress;
+          this.$Progress.parseMeta(meta);
+        }
+        this.$Progress.start();
+        next();
+      });
+      this.$router.afterEach(() => {
+        this.$Progress.finish();
+      });
     },
   },
 };
